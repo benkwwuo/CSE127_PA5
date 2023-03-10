@@ -1,4 +1,4 @@
-from pymd5 import md5, padding
+from part2.pymd5 import md5, padding
 
 m = "Use HMAC, not hashes"
 x= "Good advice"
@@ -15,6 +15,7 @@ print("h:  ", h.hexdigest())
 
 # method 2
 h2 = md5(state=bytes.fromhex("3ecc68efa1871751ea9b0b1a5b25004d"), count=512)
+
 h2.update(x)
 print("h2: ", h2.hexdigest())
 

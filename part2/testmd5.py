@@ -1,12 +1,12 @@
 import sys, urllib.parse
-from pymd5 import md5, padding
+from part2.pymd5 import md5, padding
 from urllib.parse import urlparse
 
 url = sys.argv[1]
 
 #split url
 prehash = url[:url.find("=")+1]
-curhash = url[url.find("token")+6:url.find("token")+6+31]
+curhash = url[url.find("token")+6:url.find("token")+6+32]
 print("length: " + str(len(curhash)))
 msg = url[url.find("&")+1:]
 
@@ -22,12 +22,12 @@ print(bits)
 #establish new initialization vector and append command
 #h = md5(state=curhash.decode("hex"), count=bits)
 h = md5(state=bytes.fromhex(curhash), count=512)
-x = "&command3=DeleteAllFiles" #sample appended command
+x = "&command3=UnlockAllSafes" #sample appended command
 h.update(x)
 
 #generate new hash and url
 newhash = h.hexdigest()
-padding = urllib.quote(padding(mlen*8))
+padding = urllib.parse.quote(padding(mlen*8))
 print("Padding found at end of original instructions: "+padding)
 msg = msg + padding + x
 

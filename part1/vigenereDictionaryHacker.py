@@ -1,4 +1,4 @@
-import detectEnglish, vigenereCipher, pyperclip
+import detectEnglish, vigenereCipher, part1.pyperclip as pyperclip
 
 def main():
     ciphertext = """Tzx isnz eccjxkg nfq lol mys bbqq I lxcz."""
