@@ -1,0 +1,7 @@
+
+EOF
+digest=$(cat DIGEST | sed 's/(stdin)= //' )
+echo "The sha256 digest is $digest"
+
+
+
