@@ -1,5 +1,5 @@
 import sys, urllib.parse
-from part2.pymd5 import md5, padding
+from pymd5 import md5, padding
 from urllib.parse import urlparse
 # Copy this to place when running this program
 # "http://bank.cse127.ucsd.edu/pa5/api?token=d6613c382dbb78b5592091e08f6f41fe&user=nadiah&command1=ListSquirrels&command2=NoOp"
@@ -10,8 +10,7 @@ url = sys.argv[1]
 # update original hash with the command we want to append "&uncommand3=......Safes"
 # hash this user=nadiah&command1=ListSquirrels&command2=NoOp || &command3=UnlockAllSafes by updating
 # construct new URL
-newCmd = "&command3=UnlockAllSafes" 
-
+ 
 hostname = url[url.find(urlparse(url).hostname):url.find(urlparse(url).hostname)+len(urlparse(url).hostname)]
 #print("hostname: " + hostname)
 dir = url[url.find("/pa5/api?"):url.find("/pa5/api?")+9]
@@ -24,19 +23,26 @@ cmd1 = url[url.find("command1")+9:url.find("command2")-1]
 #print("command1: " + cmd1)
 cmd2 = url[url.find("command2")+9:]
 #print("command2: " + cmd2)
-command = "&user="+user+"&command1="+cmd1+"&command2="+cmd2+newCmd
+
 #print(command)
-#must use the old token somewhere because that c ontains the password hashed into the command
-oldCmd = "&user="+user+"&command1="+cmd1+"&command2="+cmd2
+#must use the old token somewhere because that contains the password hashed into the command
+
+oldCmd = "user="+user+"&command1="+cmd1+"&command2="+cmd2
+newCmd = "&command3=UnlockAllSafes"
 
 bits = (len(oldCmd) + len(padding(len(oldCmd)*8)))*8
 newToken = md5(state=bytes.fromhex(token), count=bits)
-newToken.update(newCmd)
-#print("newtoken: " + newToken.hexdigest())
+#print(str(padding((len(oldCmd)+8)*8)))
 
-new_url = "http://"+hostname+dir+"token="+newToken.hexdigest()+oldCmd
+#original token is from using md5(state=original token) with the padded original input
+#update this with newCmd 
+#now to append the newCmd to the url, we can't just append it directly to the oldCmd
+    #oldCmd+newCmd won't work because the new hash starts from the original hash which
+    #resulted from user=..+padding, so the appropriate url should be 
+    #user=..+padding+newCmd, the padding should fill in the remaining bits in the 512bit chunk
+pad = urllib.parse.quote(padding((len(oldCmd)+8)*8))
+newToken.update(newCmd)
+
+new_url = "http://"+hostname+dir+"token="+newToken.hexdigest()+"&"+oldCmd+pad+newCmd
 print(new_url)
 
-#newToken2 = md5(oldCmd.encode("utf-8") + padding(len(oldCmd)*8) + newCmd.encode("utf-8") + padding(len(newCmd)*8)) 
-#new_url2 = "http://"+hostname+dir+"token="+newToken2.hexdigest()+command
-#print(new_url2)
